@@ -4,13 +4,30 @@ from scipy.signal import correlate
 
 
 def wavelet(t_min, t_max, fs, freq, t_mu, t_sigma):
-    mu, sigma = int(fs * t_mu), int(fs * t_sigma)
+    """
+    Generate a wavelet (i.e. sum of a sinusiod and Gaussian) that simulates
+    a neural impulse respone.
+
+    Arguments:
+        t_min (float) : start of the wavelet relative to the stimulus in seconds.
+        t_max (float) : end of the wavelet relative to the stimulus in seconds.
+        fs (int): sampling rate in Hz.
+        freq (int): frequency of the sinusoid in Hz.
+        t_mu (float): mean of the Gaussian in seconds.
+        t_sigma (float): standard deviation of the Gaussian in seconds.
+    Returns:
+        w (np.ndarray): wavelet samples.
+        t (np.ndarray): wavelet time points.
+    """
+    mu, sigma = fs * t_mu, fs * t_sigma
     n_min, n_max = int(t_min * fs), int(t_max * fs)
     n = n_max - n_min
     x = np.linspace(n_min, n_max, n)
     y_sine = np.sin(2 * np.pi * freq * x / fs)
     y_gauss = stats.norm.pdf(x, mu, sigma)
-    return y_sine * y_gauss, x / fs
+    w = y_sine * y_gauss
+    t = x / fs
+    return w, t
 
 
 def random_pulses(dur, fs, rate, min_width, max_width, min_amp, max_amp):
@@ -21,14 +38,16 @@ def random_pulses(dur, fs, rate, min_width, max_width, min_amp, max_amp):
         dur (int | float): sequeuence durarion in seconds.
         fs (int): sampling rate in Hz.
         rate (int) : average pulse rate in Hz.
-        min_width (int): minimum pulse width in samples.
-        max_width (int): maximum pulse width in samples.
+        min_width (float): minimum pulse width in seconds.
+        max_width (float): maximum pulse width in seconds.
         min_amp (int): minimum pulse amplitude.
         max_amp (int): maximum pulse amplitude.
     Returns:
         seq (np.ndarray): 1-dimensional array of square pulses.
     """
     min_dist = 2 * max_width
+    if (max_width + min_dist) * rate > 1:
+        raise ValueError("Cant generate sequence whithout violating minimum distance!")
     n_samples = int(dur * fs)
     n_pulses = int(dur * rate)
     n_dist = int(min_dist * fs)
@@ -50,7 +69,7 @@ def random_pulses(dur, fs, rate, min_width, max_width, min_amp, max_amp):
     return seq
 
 
-def powerlawnoise(dur, fs, alpha, return_spectrum=False):
+def power_law_noise(dur, fs, alpha):
     """
     Generate noise and impose a 1/f^alpha distribution on its power spectrum.
 
@@ -81,6 +100,24 @@ def autocorrelation(signal):
     r = r / np.max(r)
     return r[len(r) // 2 :]
 
+    if n_window is None:
+        current_snr_dB = 10 * np.log10(np.var(signal) / np.var(noise))
+        scaling_factor = 10 ** ((current_snr_dB - snr_db) / 20)
+        noise *= scaling_factor
+    else:
+        # zero-pad with half window size
+        n_pad = int(n_window / 2)
+        noise = np.concatenate((np.zeros(n_pad), noise, np.zeros(n_window)))
+        signal = np.concatenate((np.zeros(n_pad), signal, np.zeros(n_window)))
+        for i in range(len(signal) - n_window):
+            current_snr_dB = 10 * np.log10(
+                np.var(signal[i : i + n_window]) / np.var(noise[i : i + n_window])
+            )
+            scaling_factor = 10 ** ((current_snr_dB - snr_db) / 20)
+            noise[i : i + n_window] *= scaling_factor
+        noise = noise[n_pad:-n_pad]
+    return noise
+
 
 def scale_noise(signal, noise, snr_db, n_window=None):
     """
@@ -95,17 +132,45 @@ def scale_noise(signal, noise, snr_db, n_window=None):
         noise (np.ndarray): scaled noise.
     """
     if n_window is None:
-        current_snr_dB = 10 * np.log10(np.var(signal) / np.var(noise))
-        scaling_factor = 10 ** ((current_snr_dB - snr_db) / 20)
-        noise *= scaling_factor
-    else:
-        noise = np.concatenate((np.zeros(n_window), noise, np.zeros(n_window)))
-        signal = np.concatenate((np.zeros(n_window), signal, np.zeros(n_window)))
-        for i in range(len(signal) - n_window):
-            current_snr_dB = 10 * np.log10(
-                np.var(signal[i : i + n_window]) / np.var(noise[i : i + n_window])
+        signal_power = np.mean(signal**2)
+        noise_power = np.mean(noise**2)
+        snr = 10 ** (snr_db / 10)
+        target_noise_power = signal_power / snr
+        noise_scaling_factor = np.sqrt(target_noise_power / noise_power)
+        scaled_noise = noise * noise_scaling_factor
+    else:  # TODO: fix this
+        scaled_noise = np.zeros(len(noise))
+        n_pad = int(n_window / 2)
+        noise = np.concatenate((np.zeros(n_pad), noise, np.zeros(n_window)))
+        signal = np.concatenate((np.zeros(n_pad), signal, np.zeros(n_window)))
+        for i in range(len(signal) - n_window + 1):
+            signal_power = np.mean(signal[i : i + n_window] ** 2)
+            noise_power = np.mean(noise[i : i + n_window] ** 2)
+            snr = 10 ** (snr_db / 10)
+            target_noise_power = signal_power / snr
+            noise_scaling_factor = np.sqrt(target_noise_power / noise_power)
+            scaled_noise[i : i + n_window] = (
+                noise[i : i + n_window] * noise_scaling_factor
             )
-            scaling_factor = 10 ** ((current_snr_dB - snr_db) / 20)
-            noise[i : i + n_window] *= scaling_factor
-        noise = noise[n_window:-n_window]
-    return noise
+    return scaled_noise
+
+
+def simulate_response(stimulus, tf, tmin, tmax, fs):
+    n_pad_start, n_pad_end = np.abs(int(tmin * fs)), np.abs(int(tmax * fs))
+    response = np.zeros(len(stimulus))
+    stimulus = np.concatenate([np.zeros(n_pad_start), stimulus, np.zeros(n_pad_end)])
+    for i in range(len(response)):
+        response[i] = np.dot(tf[::-1], stimulus[i : i + len(tf)])
+    stimulus = stimulus[n_pad_start:-n_pad_end]
+
+    stimulus = np.concatenate([np.zeros(n_pad_start), stimulus])
+
+    response = np.convolve(stimulus, tf, mode="full")
+    response = response[: len(stimulus)]
+    plt.plot(np.linspace(0, len(stimulus) / fs, len(stimulus)), stimulus)
+    plt.plot(np.linspace(0, len(response) / fs, len(response)), response)
+    plt.show()
+
+    response = np.convolve(stimulus, transfer_function, mode="same")
+    response = response[n_pad:]
+    pass
