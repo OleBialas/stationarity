@@ -68,4 +68,4 @@ plt.xlabel("Amplitude [a.u.]")
 plt.ylabel("Time [s]")
 
 plt.tight_layout()
-fig.savefig(root / "results" / "plot" / "simulation_framework.png", dpi=300)
+fig.savefig(root / "results" / "plots" / "simulation_framework.png", dpi=300)
