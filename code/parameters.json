@@ -1,9 +1,10 @@
 {
     "dur_train": 3000,
+    "dur_segment": [1, 10, 120],
     "cv_folds": 5,
     "fs": 128,
     "eeg": {"low_cutoff": 1, "high_cutoff": 15, "reference": "average"},
-    "stim": {"low_cutoff": 20, "high_cutoff": 9000, "env_cutoff": 15, "n_bands": 16},
+    "stim": {"low_cutoff": 20, "high_cutoff": 9000, "env_cutoff": 15, "n_bands": [1, 16, 32]},
     "lambda": [
         0.001,
         0.01,
@@ -14,8 +15,8 @@
         1000,
         10000
     ],
-    "tmin": 0,
-    "tmax": 0.3,
+    "tmin": -0.1,
+    "tmax": 0.4,
     "n_permute": 1000,
     "seed": 100
 }
