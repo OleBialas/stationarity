@@ -121,19 +121,23 @@ def segment_data(stimulus, response, dur, normalize=True):
     return stimulus_segments, response_segments
 
 
-def load_spectrogram(n):
+def load_spectrogram(bands):
     """
-    Compute the Hilbert envelope for n (ERB-spaced) spectral bands per segment.
+    Load spectrogram with given number of `bands` for all runs.
 
     Arguments:
-        n (int): number of bands the signal is divided into before computing
-            the envelope
+        bands (int): number of spectral bands the signal was divided into.
 
+    Returns:
+        stimulus (list): list of arrays with dimensions samples by bands.
     """
     files = list((root / "results" / "spectrogram").glob(f"*{n}_band_spg.npy"))
     files.sort()
-    stimulus = [np.load(f) for f in files]
-    return stimulus
+    if len(files) == 0:
+        raise FileNotFoundError(f"Couldn't find any spectrograms with {bands} bands!")
+    else:
+        stimulus = [np.load(f) for f in files]
+        return stimulus
 
 
 def load_eeg(sub):
