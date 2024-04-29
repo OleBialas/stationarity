@@ -26,6 +26,6 @@ for i_b, bands in enumerate(p["stim"]["n_bands"]):
         spectrogram = spectrogram.data
         spectrogram = spectrogram.clip(min=0)
         np.save(
-            root / "results" / "spectrogram" / f"{fname}_spg_{bands}bands.npy",
+            root / "results" / "spectrogram" / f"{fname}_{bands}_band_spg.npy",
             spectrogram,
         )

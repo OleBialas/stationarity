@@ -130,23 +130,9 @@ def load_spectrogram(n):
             the envelope
 
     """
-    wav_files = list((root / "data" / "stimuli").glob("*.wav"))
-    wav_files.sort()
-    stimulus = []
-    for w in wav_files:
-        sound = Sound(w).channel(0)
-        sound = sound.filter(
-            frequency=(p["stim"]["low_cutoff"], p["stim"]["high_cutoff"]),
-            kind="bp",
-        )
-        sound = sound.resample(int(sound.samplerate / 2))  # downsample for performance
-        fbank = Filter.cos_filterbank(samplerate=sound.samplerate, n_filters=n)
-        subbands = fbank.apply(sound)
-        spectrogram = subbands.envelope(cutoff=p["stim"]["env_cutoff"])
-        spectrogram = spectrogram.resample(p["fs"])
-        spectrogram = spectrogram.data
-        spectrogram = spectrogram.clip(min=0)
-        stimulus.append(spectrogram)
+    files = list((root / "results" / "spectrogram").glob(f"*{n}_band_spg.npy"))
+    files.sort()
+    stimulus = [np.load(f) for f in files]
     return stimulus
 
 
