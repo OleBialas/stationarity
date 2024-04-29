@@ -131,7 +131,7 @@ def load_spectrogram(bands):
     Returns:
         stimulus (list): list of arrays with dimensions samples by bands.
     """
-    files = list((root / "results" / "spectrogram").glob(f"*{n}_band_spg.npy"))
+    files = list((root / "results" / "spectrogram").glob(f"*{bands}_band_spg.npy"))
     files.sort()
     if len(files) == 0:
         raise FileNotFoundError(f"Couldn't find any spectrograms with {bands} bands!")
