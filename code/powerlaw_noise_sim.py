@@ -11,7 +11,7 @@ np.random.seed(p["seed"])
 dur_segment = [1, 2, 5, 10, 30, 60, 100, 200]
 n_reps = 100
 tmin, tmax = 0, 0.25
-snr_db = -30
+snr_db = -40
 
 # simulate stimuli and neural response
 tf, tf_times = wavelet(tmin, tmax, p["fs"], 4, 0.1, 0.03)
