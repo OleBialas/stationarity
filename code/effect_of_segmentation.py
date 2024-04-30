@@ -10,7 +10,7 @@ Writes:
       subjects by segment duration by number of spectral bands. With the optimal
       value of lambda
 """
-
+from argparse import ArgumentParser
 from pathlib import Path
 import json
 import numpy as np
@@ -22,16 +22,11 @@ root = Path(__file__).parent.parent.absolute()
 p = json.load(open(root / "code" / "parameters.json"))
 np.random.seed(p["seed"])
 
-subjects = list((root / "data").glob("sub*"))
-subjects.sort()
 
-accuracy, regularization = [
-    np.zeros((len(subjects), len(p["dur_segment"]), len(p["stim"]["n_bands"])))
-    for _ in range(2)
-]
-
-for i_s, sub in enumerate(subjects):
-    print(f"Preparing recordings for {sub.name} ...")
+def effect_of_segmentation(sub):
+    accuracy, regularization = [
+        np.zeros((len(p["dur_segment"]), len(p["stim"]["n_bands"]))) for _ in range(2)
+    ]
     response = load_eeg(sub)
     for i_b, bands in enumerate(p["stim"]["n_bands"]):
         print(f"Computing spectrogram with {bands} bands ...")
@@ -52,7 +47,16 @@ for i_s, sub in enumerate(subjects):
                 k=p["cv_folds"],
                 verbose=False,
             ).max()
-            accuracy[i_s, i_d, i_b] = r
-            regularization[i_s, i_d, i_b] = trf.regularization
-    np.save(root / "results" / "fit" / f"{sub.name}_accuracy.npy", accuracy)
-    np.save(root / "results" / "fit" / f"{sub.name}_lambda.npy", regularization)
+            accuracy[i_d, i_b] = r
+            regularization[i_d, i_b] = trf.regularization
+        np.save(root / "results" / "fit" / f"{sub.name}_accuracy.npy", accuracy)
+        np.save(root / "results" / "fit" / f"{sub.name}_lambda.npy", regularization)
+
+
+if __name__ == "__main__":
+    parser = ArgumentParser(
+        description="Fit forward TRF with variable data segment duration. Saves files {sub}_accuracy.npy and {sub}_lamba.npy in /results/fit."
+    )
+    parser.add_argument("sub", type=str, help="subject ID, e.g. 'sub-004'")
+    args = parser.parse_args()
+    effect_of_segmentation(args.sub)
