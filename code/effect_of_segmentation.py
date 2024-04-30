@@ -31,7 +31,7 @@ accuracy, regularization = [
 ]
 
 for i_s, sub in enumerate(subjects):
-    print(f"Preparing recordings for {sub} ...")
+    print(f"Preparing recordings for {sub.name} ...")
     response = load_eeg(sub)
     for i_b, bands in enumerate(p["stim"]["n_bands"]):
         print(f"Computing spectrogram with {bands} bands ...")
@@ -54,5 +54,5 @@ for i_s, sub in enumerate(subjects):
             ).max()
             accuracy[i_s, i_d, i_b] = r
             regularization[i_s, i_d, i_b] = trf.regularization
-np.save(root / "results" / "accuracy.npy", accuracy)
-np.save(root / "results" / "lambda.npy", regularization)
+    np.save(root / "results" / "fit" / f"{sub.name}_accuracy.npy", accuracy)
+    np.save(root / "results" / "fit" / f"{sub.name}_lambda.npy", regularization)
