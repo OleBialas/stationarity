@@ -43,7 +43,7 @@ for i_s, sub in enumerate(subjects):
             stimulus_segments, response_segments = segment_data(
                 stimulus, response, dur, normalize=False
             )
-            trf = TRF()
+            trf = TRF(preload=False)
             trf.train(
                 stimulus_segments,
                 response_segments,
