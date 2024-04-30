@@ -13,7 +13,7 @@ np.random.seed(p["seed"])
 tf, tf_times = wavelet(p["tmin"], p["tmax"], p["fs"], p["freq"], p["mu"], p["sigma"])
 stim_train, stim_test = [
     random_pulses(
-        p["dur"], p["fs"], p["rate"], p["wmin"], p["wmax"], p["amax"], p["amin"]
+        p["dur"], p["fs"], p["rate"], p["wmin"], p["wmax"], p["amin"], p["amax"]
     )
     for _ in range(2)
 ]
