@@ -1,6 +1,5 @@
 {
     "dur_train": 3000,
-    "dur_sim": 1200,
     "dur_segment_train": [1, 10, 120],
     "cv_folds": 5,
     "fs": 128,
