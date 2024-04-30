@@ -19,18 +19,16 @@ from mtrf import TRF
 from mtrf.stats import crossval
 
 root = Path(__file__).parent.parent.absolute()
-p = json.load(open(root / "code" / "parameters.json"))
 np.random.seed(p["seed"])
+p = json.load(open(root / "code" / "parameters.json"))
 
 subjects = list((root / "data").glob("sub*"))
 subjects.sort()
 
-accuracy = np.zeros(
-    (len(subjects), 128, len(p["dur_segment"]), len(p["stim"]["n_bands"]))
-)
-regularization = np.zeros(
-    (len(subjects), len(p["dur_segment"]), len(p["stim"]["n_bands"]))
-)
+accuracy, regularization = [
+    np.zeros((len(subjects), len(p["dur_segment"]), len(p["stim"]["n_bands"])))
+    for _ in range(2)
+]
 
 for i_s, sub in enumerate(subjects):
     print(f"Preparing recordings for {sub} ...")
@@ -44,7 +42,7 @@ for i_s, sub in enumerate(subjects):
                 stimulus, response, dur, normalize=False
             )
             trf = TRF(preload=False)
-            trf.train(
+            r = trf.train(
                 stimulus_segments,
                 response_segments,
                 p["fs"],
@@ -53,20 +51,8 @@ for i_s, sub in enumerate(subjects):
                 p["lambda"],
                 k=p["cv_folds"],
                 verbose=False,
-            )
-            r = crossval(
-                trf,
-                stimulus_segments,
-                response_segments,
-                p["fs"],
-                p["tmin"],
-                p["tmax"],
-                trf.regularization,
-                k=p["cv_folds"],
-                average=False,
-                verbose=False,
-            )
-            accuracy[i_s, :, i_d, i_b] = r
+            ).max()
+            accuracy[i_s, i_d, i_b] = r
             regularization[i_s, i_d, i_b] = trf.regularization
 np.save(root / "results" / "accuracy.npy", accuracy)
 np.save(root / "results" / "lambda.npy", regularization)
