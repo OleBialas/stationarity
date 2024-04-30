@@ -19,8 +19,8 @@ from mtrf import TRF
 from mtrf.stats import crossval
 
 root = Path(__file__).parent.parent.absolute()
-np.random.seed(p["seed"])
 p = json.load(open(root / "code" / "parameters.json"))
+np.random.seed(p["seed"])
 
 subjects = list((root / "data").glob("sub*"))
 subjects.sort()
