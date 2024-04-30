@@ -32,12 +32,12 @@ regularization = np.zeros(
     (len(subjects), len(p["dur_segment"]), len(p["stim"]["n_bands"]))
 )
 
-for i_b, bands in enumerate(p["stim"]["n_bands"]):
-    print(f"Computing spectrogram with {bands} bands ...")
-    stimulus = load_spectrogram(bands)
-    for i_s, sub in enumerate(subjects):
-        print(f"Preparing recordings for {sub} ...")
-        response = load_eeg(sub)
+for i_s, sub in enumerate(subjects):
+    print(f"Preparing recordings for {sub} ...")
+    response = load_eeg(sub)
+    for i_b, bands in enumerate(p["stim"]["n_bands"]):
+        print(f"Computing spectrogram with {bands} bands ...")
+        stimulus = load_spectrogram(bands)
         for i_d, dur in enumerate(p["dur_segment"]):
             print(f"Training TRF with {dur} second segments ...")
             stimulus_segments, response_segments = segment_data(
