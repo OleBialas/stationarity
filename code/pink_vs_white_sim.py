@@ -27,9 +27,7 @@ resp_train = np.expand_dims(resp_train, axis=1)
 resp_test = np.expand_dims(resp_test, axis=1)
 
 acc, reg = [
-    np.zeros(
-        (len(p["snr_db"]), len(p["n_reps"]), len(p["alpha"]), len(p["dur_segment"]))
-    )
+    np.zeros((len(p["snr_db"]), p["n_reps"], len(p["alpha"]), len(p["dur_segment"])))
     for _ in range(2)
 ]
 for i_r in range(p["n_reps"]):
