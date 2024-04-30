@@ -30,6 +30,7 @@ acc, reg = [
     np.zeros((len(p["snr_db"]), p["n_reps"], len(p["alpha"]), len(p["dur_segment"])))
     for _ in range(2)
 ]
+
 for i_r in range(p["n_reps"]):
     print(i_r)
     for i_a, alpha in enumerate(p["alpha"]):  # use white and pink noise
@@ -39,7 +40,7 @@ for i_r in range(p["n_reps"]):
             noise_scaled = np.expand_dims(noise_scaled, axis=1)
             for i_d, dur in enumerate(p["dur_segment"]):
                 stim_train_segments, resp_train_segments = segment_data(
-                    [stim_train], [resp_train + noise], dur, normalize=True
+                    [stim_train], [resp_train + noise_scaled], dur, normalize=True
                 )
                 stim_test_segments, resp_test_segments = segment_data(
                     [stim_test], [resp_test], dur, normalize=True
