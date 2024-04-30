@@ -33,7 +33,7 @@ acc, reg = [
 for i_r in range(p["n_reps"]):
     print(i_r)
     for i_a, alpha in enumerate(p["alpha"]):  # use white and pink noise
-        noise = power_law_noise(p["dur_sim"], p["fs"], alpha)
+        noise = power_law_noise(p["dur"], p["fs"], alpha)
         for i_s, snr_db in enumerate(p["snr_db"]):
             noise_scaled = scale_noise(resp_train, noise, snr_db)
             noise_scaled = np.expand_dims(noise_scaled, axis=1)
