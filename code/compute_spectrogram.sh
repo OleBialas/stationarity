@@ -1,7 +1,7 @@
 #!/bin/bash
 # Submit the job array with one job per subject and number of bands
 #SBATCH --output=/scratch/obialas/logs/compute_spectrograms.log
-#SBATCH -t 0-48:00:00
+#SBATCH -t 24:00:00
 #SBATCH -c 8 --mem-per-cpu=4G
 #SBATCH --partition=debug
 #SBATCH --mail-type=END
