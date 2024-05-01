@@ -3,7 +3,6 @@
 #SBATCH --output=/scratch/obialas/logs/compute_spectrograms.log
 #SBATCH -t 24:00:00
 #SBATCH -c 8 --mem-per-cpu=4G
-#SBATCH --partition=debug
 #SBATCH --mail-type=END
 #SBATCH --mail-user=ole.bialas@posteo.de
 
