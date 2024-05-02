@@ -13,7 +13,8 @@ np.random.seed(p["seed"])
 
 def mean_nonstationary_noise(response, beta):
     t = np.linspace(0, p["dur"], p["dur"] * p["fs"])
-    sin = beta * np.sin(2 * np.pi * p["f"] * t)
+    phase_shift = np.random.uniform(0, 2 * np.pi)
+    sin = beta * np.sin(2 * np.pi * p["f"] * t + phase_shift)
     noise = np.random.normal(sin, 1)  # noise that is variance non-stationary
     noise = scale_noise(response, noise, p["snr_db"])
     noise = np.expand_dims(noise, axis=1)
@@ -22,7 +23,8 @@ def mean_nonstationary_noise(response, beta):
 
 def variance_nonstationary_noise(response, beta):
     t = np.linspace(0, p["dur"], p["dur"] * p["fs"])
-    sin = np.abs(beta * np.sin(2 * np.pi * p["f"] * t))
+    phase_shift = np.random.uniform(0, 2 * np.pi)
+    sin = np.abs(beta * np.sin(2 * np.pi * p["f"] * t + phase_shift))
     noise = np.random.normal(0, sin)  # noise that is variance non-stationary
     noise = scale_noise(response, noise, p["snr_db"])
     noise = np.expand_dims(noise, axis=1)
