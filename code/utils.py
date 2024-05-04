@@ -10,7 +10,6 @@ from slab import Sound, Filter
 
 root = Path(__file__).parent.parent.absolute()
 set_log_level("WARNING")
-p = json.load(open(root / "code" / "parameters.json"))
 
 
 def compute_models(stimulus, response):
@@ -84,7 +83,7 @@ def optimize_lambda(stimulus, response, models, splits):
     return lambdas[np.argmax(accuracy_per_lambda)]
 
 
-def segment_data(stimulus, response, dur, normalize=True):
+def segment_data(stimulus, response, fs, dur, normalize=True):
     """
     Crop stimulus and response to same length and segment them into (normalized) chunks.
     Arguments:
@@ -100,7 +99,7 @@ def segment_data(stimulus, response, dur, normalize=True):
         response (list): list of samples-by-channels arrays containing EEG responses
             for each segment.
     """
-    n_segment = int(dur * p["fs"])
+    n_segment = int(dur * fs)
     stimulus_segments, response_segments = [], []
     for s, r in zip(stimulus, response):
         if len(s) < len(r):
@@ -140,7 +139,7 @@ def load_spectrogram(bands):
         return stimulus
 
 
-def load_eeg(sub):
+def load_eeg(sub, dur, fs, low_cutoff, high_cutoff):
     """
     Load and preprocess EEG for one subject. A standard biosemi128 montage is applied,
     channels marked as bad are interpolated and the data is filtered, resampled and
@@ -159,9 +158,9 @@ def load_eeg(sub):
     channels = list((sub_folder / "eeg").glob("*_channels.tsv"))
     recordings.sort()
     channels.sort()
+    n_samples = int(dur / len(recordings) * fs)
     montage = make_standard_montage("biosemi128")
     response = []
-    n_samples = int(p["dur_train"] / len(recordings) * p["fs"])
     for r, c in zip(recordings, channels):
         raw = read_raw_brainvision(r, verbose=False, preload=True)
         raw.set_montage(montage)
@@ -171,9 +170,9 @@ def load_eeg(sub):
         ]
         if len(raw.info["bads"]) > 0:
             raw.interpolate_bads()
-        raw.filter(p["eeg"]["low_cutoff"], p["eeg"]["high_cutoff"])
-        raw.resample(p["fs"])
-        raw = raw.set_eeg_reference(p["eeg"]["reference"])
+        raw.filter(low_cutoff, high_cutoff)
+        raw.resample(fs)
+        raw = raw.set_eeg_reference("average")
         raw = raw.get_data().T
         raw = raw[:n_samples]  # crop segment
         response.append(raw)
