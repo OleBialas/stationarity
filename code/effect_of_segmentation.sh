@@ -13,7 +13,7 @@ source /software/anaconda/2019.10/bin/activate hivemind
 cd /scratch/obialas/stationarity
 
 # Extract parameters from the json file
-json_file="code/parameters.json"
+json_file="code/effect_of_segmentation_parameters.json"
 sub_list=$(jq -r '.subjects | @csv' "$json_file")
 
 # Convert the CSV string to an array
