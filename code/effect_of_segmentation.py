@@ -19,7 +19,7 @@ from mtrf import TRF
 from mtrf.stats import crossval
 
 root = Path(__file__).parent.parent.absolute()
-p = json.load(open(root / "code" / "parameters.json"))
+p = json.load(open(root / "code" / "effect_of_segmentation_parameters.json"))
 np.random.seed(p["seed"])
 
 
