@@ -27,14 +27,16 @@ def effect_of_segmentation(sub):
     accuracy, regularization = [
         np.zeros((len(p["dur_segment"]), len(p["stim"]["n_bands"]))) for _ in range(2)
     ]
-    response = load_eeg(sub)
+    response = load_eeg(
+        sub, p["dur_train"], p["fs"], p["eeg_low_cutoff"], p["eeg_high_cutoff"]
+    )
     for i_b, bands in enumerate(p["stim"]["n_bands"]):
         print(f"Computing spectrogram with {bands} bands ...")
         stimulus = load_spectrogram(bands)
         for i_d, dur in enumerate(p["dur_segment"]):
             print(f"Training TRF with {dur} second segments ...")
             stimulus_segments, response_segments = segment_data(
-                stimulus, response, dur, normalize=False
+                stimulus, response, p["fs"], dur, normalize=False
             )
             trf = TRF(preload=False)
             r = trf.train(
@@ -49,8 +51,8 @@ def effect_of_segmentation(sub):
             ).max()
             accuracy[i_d, i_b] = r
             regularization[i_d, i_b] = trf.regularization
-        np.save(root / "results" / "fit" / f"{sub.name}_accuracy.npy", accuracy)
-        np.save(root / "results" / "fit" / f"{sub.name}_lambda.npy", regularization)
+    np.save(root / "results" / "fit" / f"{sub}_accuracy.npy", accuracy)
+    np.save(root / "results" / "fit" / f"{sub}_lambda.npy", regularization)
 
 
 if __name__ == "__main__":
