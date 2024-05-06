@@ -11,10 +11,9 @@
 # set up the environment
 source /software/anaconda/2019.10/bin/activate hivemind
 cd /scratch/obialas/stationarity
-
 # Extract parameters from the json file
 json_file="code/effect_of_segmentation_parameters.json"
-sub_list=$(jq -r '.subjects | @csv' "$json_file")
+sub_list=$(/software/jq/1.6/jq -r '.subjects | @csv' "$json_file")
 
 # Convert the CSV string to an array
 IFS=',' read -ra sub_array <<< "$sub_list"
