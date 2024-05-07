@@ -1,11 +1,11 @@
 {
     "dur_train": 3000,
-    "dur_segment": [1, 10, 30, 60, 120],
+    "dur_segment": [1, 2, 5, 10, 15, 30, 40, 60, 120],
     "cv_folds": 5,
     "fs": 128,
     "eeg_low_cutoff": 1,
     "eeg_high_cutoff": 15,
-    "stim": {"low_cutoff": 20, "high_cutoff": 9000, "env_cutoff": 15, "n_bands": [1, 16, 32]},
+    "stim": {"low_cutoff": 20, "high_cutoff": 9000, "env_cutoff": 15, "n_bands": [1, 8, 16, 32]},
     "lambda": [
         0.001,
         0.01,
