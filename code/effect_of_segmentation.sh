@@ -18,21 +18,20 @@ sub_list=$(/software/jq/1.6/jq -r '.subjects | @csv' "$json_file")
 # Convert the CSV string to an array
 IFS=',' read -ra sub_array <<< "$sub_list"
 
-for sub in "${sub_array[@]}"
-do
-    sub=$(echo "$sub" | sed 's/^"\(.*\)"$/\1/') # remove quotation marks
-    echo "running $sub"
-    # create throw-away clone in temporay directory
-    cd /local_scratch/$SLURM_JOB_ID
-    datalad clone /scratch/obialas/stationarity ds
-    cd ds
-    mkdir -p results/fit
-    git-annex dead here # dont use git annex in the clone
-    git checkout -b "job-$SLURM_ARRAY_TASK_ID" # new unique branch
+sub=${sub_array[$SLURM_ARRAY_TASK_ID]}
+sub=$(echo "$sub" | sed 's/^"\(.*\)"$/\1/') # remove quotation marks
+echo "running $sub"
 
-    datalad run --input "data/$sub" --input "results/spectrogram" --output "results/fit/*" "python code/effect_of_segmentation.py $sub"
-    datalad push --to origin
-done
+# create throw-away clone in temporay directory
+cd /local_scratch/$SLURM_JOB_ID
+datalad clone /scratch/obialas/stationarity ds
+cd ds
+mkdir -p results/fit
+git-annex dead here # dont use git annex in the clone
+git checkout -b "job-$SLURM_ARRAY_TASK_ID" # new unique branch
+
+datalad run --input "data/$sub" --input "results/spectrogram" --output "results/fit/*" "python code/effect_of_segmentation.py $sub"
+datalad push --to origin
 
 
 
