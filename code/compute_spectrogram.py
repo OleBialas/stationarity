@@ -4,7 +4,7 @@ import numpy as np
 from slab import Sound, Filter
 
 root = Path(__file__).parent.parent.absolute()
-p = json.load(open(root / "code" / "parameters.json"))
+p = json.load(open(root / "code" / "effect_of_segmentation_parameters.json"))
 np.random.seed(p["seed"])
 
 wav_files = list((root / "data" / "stimuli").glob("*.wav"))
