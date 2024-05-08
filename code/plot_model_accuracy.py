@@ -4,7 +4,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import scienceplots
 
-root = Path(__file__).parent.parent.absolute
+root = Path(__file__).parent.parent.absolute()
 plt.style.use("science")
 p = json.load(open(root / "code" / "effect_of_segmentation_parameters.json"))
 
