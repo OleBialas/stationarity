@@ -42,7 +42,7 @@ for i in range(n_resample):
     acc_resampled[i, :, :] = acc[idx].mean(axis=0)
     reg_resampled[i, :, :] = reg[idx].mean(axis=0)
 
-fig, ax = plt.subplots(1, 2, sharex=True, figsize=(8, 6))
+fig, ax = plt.subplots(1, 2, sharex=True, figsize=(8, 4))
 
 mean, std = acc_resampled.mean(axis=0), acc_resampled.std(axis=0)
 for i_n, n in enumerate(n_bands):
@@ -68,4 +68,5 @@ fig.supxlabel("Segment duration [s]")
 for label, axes in zip(["a", "b"], ax.flatten()):
     axes.text(0.025, 0.92, label, transform=axes.transAxes, font="bold")
 
+plt.tight_layout()
 fig.savefig(root / "results" / "plots" / "model_accuracy.png", dpi=300)
