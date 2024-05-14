@@ -114,6 +114,6 @@ ax[1].set(xlabel="Time lag [s]")
 ax[2].legend()
 
 for label, axes in zip(["a", "b", "c"], ax.flatten()):
-    axes.text(0.025, 0.92, label, transform=axes.transAxes, font="bold")
+    axes.text(0.03, 0.95, label, transform=axes.transAxes, font="bold")
 
 fig.savefig(root / "results" / "plots" / "trf_comparison.png", dpi=300)
