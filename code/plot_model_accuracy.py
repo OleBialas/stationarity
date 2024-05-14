@@ -48,7 +48,7 @@ for i in range(n_resample):
     acc_resampled[i, :, :] = acc[idx].mean(axis=0)
     reg_resampled[i, :, :] = reg[idx].mean(axis=0)
 
-fig, ax = plt.subplots(1, 3, figsize=(8, 4))
+fig, ax = plt.subplots(1, 3, figsize=(8, 3))
 
 ax[2].scatter(sub_acc, diff, color="black")
 ax[2].set(xlabel="Model accuracy [r]", ylabel="Change in accuracy [a.u.]")
