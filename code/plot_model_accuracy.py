@@ -56,7 +56,7 @@ ax[2].set(xlabel="Model accuracy [r]", ylabel="Change in accuracy [a.u.]")
 mean, std = acc_resampled.mean(axis=0), acc_resampled.std(axis=0)
 for i_n, n in enumerate(p["stim"]["n_bands"]):
     if i_n < 3:
-        ax[0].plot(p["dur_segment"], mean[:, i_n], label=n)
+        ax[0].semilogx(p["dur_segment"], mean[:, i_n], label=n)
         ax[0].fill_between(
             p["dur_segment"],
             mean[:, i_n] + std[:, i_n],
@@ -79,10 +79,10 @@ ax[0].legend(title="spectral bands")
 ax[0].set(
     xlim=(p["dur_segment"][0], p["dur_segment"][-1]),
     ylabel="Accuracy [a.u.]",
+    xlabel="Segment duration [s]",
     ylim=(0.75, 0.96),
 )
-ax[1].set(ylabel="Regularization [a.u.]")
-fig.supxlabel("Segment duration [s]")
+ax[1].set(ylabel="Regularization [a.u.]", xlabel="Segment duration [s]")
 
 for label, axes in zip(["a", "b", "c"], ax.flatten()):
     axes.text(0.03, 0.95, label, transform=axes.transAxes, font="bold")
