@@ -105,10 +105,14 @@ ax[0].set(
     xlim=(p["dur_segment"][0], p["dur_segment"][-1]),
     ylabel="Accuracy [a.u.]",
     xlabel="Segment duration [s]",
-    ylim=(0.7, 0.94),
+    ylim=(0.68, 0.94),
 )
-ax[1].set(ylabel="Regularization [a.u.]", xlabel="Segment duration [s]")
-ax[2].set(ylim=(-0.11, 0.51))
+ax[1].set(
+    ylabel="Regularization [a.u.]",
+    xlabel="Segment duration [s]",
+    xlim=(p["dur_segment"][0], p["dur_segment"][-1]),
+)
+ax[2].set(ylim=(-0.12, 0.51))
 
 for label, axes in zip(["a", "b", "c"], ax.flatten()):
     axes.text(0.03, 0.95, label, transform=axes.transAxes, font="bold")
