@@ -2,7 +2,7 @@ from pathlib import Path
 import json
 import numpy as np
 from matplotlib import pyplot as plt
-from scipy.stats import ttest_rel
+from scipy.stats import ttest_rel, linregress
 import scienceplots
 
 root = Path(__file__).parent.parent.absolute()
@@ -70,7 +70,7 @@ for i in range(n_resample):
     reg_resampled[i, :, :] = reg[idx].mean(axis=0)
 
 fig, ax = plt.subplots(1, 3, figsize=(8, 3))
-
+print(linregress(sub_acc, diff))
 ax[2].scatter(sub_acc, diff, color="black")
 ax[2].set(xlabel="Model accuracy [r]", ylabel="Change in accuracy [a.u.]")
 
@@ -108,6 +108,7 @@ ax[0].set(
     ylim=(0.7, 0.94),
 )
 ax[1].set(ylabel="Regularization [a.u.]", xlabel="Segment duration [s]")
+ax[2].set(ylim=(-0.11, 0.51))
 
 for label, axes in zip(["a", "b", "c"], ax.flatten()):
     axes.text(0.03, 0.95, label, transform=axes.transAxes, font="bold")
