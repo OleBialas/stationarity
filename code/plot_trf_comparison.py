@@ -100,7 +100,13 @@ for i, (dur, idx, label) in enumerate(
     trf = trf.to_mne_evoked(montage)[0].crop(tmin, tmax).pick([ch])
     weights = trf.data.flatten()
     mean_abs_weight_full = np.abs(weights / weights.max()).mean()
-    ax[2].plot(trfs[0].times, weights / weights.max(), color=colors[i], label=label)
+    ax[2].plot(
+        trfs[0].times,
+        weights / weights.max(),
+        color=colors[i],
+        label=label,
+        linewidth=p_plt["linewidth"],
+    )
 
     # Compute the TRF on the whole data after removing outlier segments
     stimulus_segments = [s for i, s in enumerate(stimulus_segments) if not i in rm_idx]
@@ -118,7 +124,13 @@ for i, (dur, idx, label) in enumerate(
     weights = trf.data.flatten()
     mean_abs_weight_clean = np.abs(weights / weights.max()).mean()
     print((mean_abs_weight_full - mean_abs_weight_clean) / mean_abs_weight_full)
-    ax[2].plot(trfs[0].times, weights / weights.max(), color=colors[i], linestyle="--")
+    ax[2].plot(
+        trfs[0].times,
+        weights / weights.max(),
+        color=colors[i],
+        linestyle="--",
+        linewidth=p_plt["linewidth"],
+    )
 
 ax[0].set(
     xlim=(trfs[0].times.min(), trfs[1].times.max()),
