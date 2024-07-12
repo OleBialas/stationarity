@@ -105,7 +105,7 @@ ax[0].set(
     xlim=(p["dur_segment"][0], p["dur_segment"][-1]),
     ylabel="Accuracy [a.u.]",
     xlabel="Segment duration [s]",
-    ylim=(0.75, 0.96),
+    ylim=(0.7, 0.94),
 )
 ax[1].set(ylabel="Regularization [a.u.]", xlabel="Segment duration [s]")
 
