@@ -8,8 +8,19 @@ from mne.channels import make_standard_montage
 from utils import load_eeg, load_spectrogram, segment_data
 
 root = Path(__file__).parent.parent.absolute()
+
+# configure pyplot
 plt.style.use("science")
 colors = plt.rcParams["axes.prop_cycle"].by_key()["color"]
+p_plt = json.load(open(root / "code" / "plotting_parameters.json"))
+plt.rc("font", size=p_plt["font"]["small"])  # controls default text sizes
+plt.rc("axes", titlesize=p_plt["font"]["small"])  # fontsize of the axes title
+plt.rc("axes", labelsize=p_plt["font"]["medium"])  # fontsize of the x and y labels
+plt.rc("xtick", labelsize=p_plt["font"]["small"])  # fontsize of the tick labels
+plt.rc("ytick", labelsize=p_plt["font"]["small"])  # fontsize of the tick labels
+plt.rc("legend", p_pltsize=p_plt["font"]["small"])  # legend fontsize
+plt.rc("figure", titlesize=p_plt["font"]["bigger"])
+
 p = json.load(open(root / "code" / "effect_of_segmentation_parameters.json"))
 
 short_dur, long_dur = 5, 120  # segment durations to test
@@ -88,6 +99,7 @@ for i, (dur, idx, label) in enumerate(
     )
     trf = trf.to_mne_evoked(montage)[0].crop(tmin, tmax).pick([ch])
     weights = trf.data.flatten()
+    mean_abs_weight_full = np.abs(weights / weights.max()).mean()
     ax[2].plot(trfs[0].times, weights / weights.max(), color=colors[i], label=label)
 
     # Compute the TRF on the whole data after removing outlier segments
@@ -104,6 +116,8 @@ for i, (dur, idx, label) in enumerate(
     )
     trf = trf.to_mne_evoked(montage)[0].crop(tmin, tmax).pick([ch])
     weights = trf.data.flatten()
+    mean_abs_weight_clean = np.abs(weights / weights.max()).mean()
+    print((mean_abs_weight_full - mean_abs_weight_clean) / mean_abs_weight_full)
     ax[2].plot(trfs[0].times, weights / weights.max(), color=colors[i], linestyle="--")
 
 ax[0].set(
@@ -114,6 +128,6 @@ ax[1].set(xlabel="Time lag [s]")
 ax[2].legend()
 
 for label, axes in zip(["a", "b", "c"], ax.flatten()):
-    axes.text(0.03, 0.95, label, transform=axes.transAxes, font="bold")
+    axes.text(0.03, 0.95, label, transform=axes.transAxes, p_plt="bold")
 
 fig.savefig(root / "results" / "plots" / "trf_comparison.png", dpi=300)

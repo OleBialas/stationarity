@@ -1,0 +1,8 @@
+{
+    "font":{
+        "small":10,
+        "medium":12,
+        "bigger":14
+    },
+    "linewidth": 2
+}

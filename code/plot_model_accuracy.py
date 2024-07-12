@@ -2,13 +2,14 @@ from pathlib import Path
 import json
 import numpy as np
 from matplotlib import pyplot as plt
+from scipy.stats import ttest_rel
 import scienceplots
 
 root = Path(__file__).parent.parent.absolute()
 plt.style.use("science")
 p = json.load(open(root / "code" / "effect_of_segmentation_parameters.json"))
 
-thresh = 0.015  # ignore when accuracy is below this threshold
+thresh = 0.01  # ignore when accuracy is below this threshold
 n_resample = 1000
 short_dur, long_dur = 5, 120  # segment durations for comparing accuracy
 n_bands = 16  # model for comparing accuracy
@@ -30,10 +31,19 @@ for i_sub, (acc_file, reg_file) in enumerate(zip(acc_files, reg_files)):
         acc[i_sub, :, :] = acc_sub
         reg[i_sub, :, :] = reg_sub
 
+
 sub_acc = acc[:, :, band_idx].max(axis=1)
 mask = acc.sum(axis=(1, 2)) == 0  # remove 0 entries
 print(f"removing {sum(mask)} elements due to correlation threshold")
 acc = acc[np.invert(mask)]
+
+# paired t-test on prediction accuracy
+print(acc[:, short_idx, band_idx].mean())
+print(acc[:, short_idx, band_idx].std())
+print(acc[:, long_idx, band_idx].mean())
+print(acc[:, long_idx, band_idx].std())
+print(ttest_rel(acc[:, short_idx, band_idx], acc[:, long_idx, band_idx]))
+
 sub_acc = sub_acc[np.invert(mask)]
 reg = reg[reg.sum(axis=(1, 2)) != 0]
 acc /= acc.max(axis=(1, 2), keepdims=True)  # normalize per band and subject
