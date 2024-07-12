@@ -6,7 +6,18 @@ from scipy.stats import ttest_rel
 import scienceplots
 
 root = Path(__file__).parent.parent.absolute()
+
+# configure pyplot
 plt.style.use("science")
+colors = plt.rcParams["axes.prop_cycle"].by_key()["color"]
+p_plt = json.load(open(root / "code" / "plotting_parameters.json"))
+plt.rc("font", size=p_plt["font"]["small"])  # controls default text sizes
+plt.rc("axes", titlesize=p_plt["font"]["small"])  # fontsize of the axes title
+plt.rc("axes", labelsize=p_plt["font"]["medium"])  # fontsize of the x and y labels
+plt.rc("xtick", labelsize=p_plt["font"]["small"])  # fontsize of the tick labels
+plt.rc("ytick", labelsize=p_plt["font"]["small"])  # fontsize of the tick labels
+plt.rc("legend", fontsize=p_plt["font"]["small"])  # legend fontsize
+plt.rc("figure", titlesize=p_plt["font"]["bigger"])
 p = json.load(open(root / "code" / "effect_of_segmentation_parameters.json"))
 
 thresh = 0.01  # ignore when accuracy is below this threshold
@@ -66,7 +77,9 @@ ax[2].set(xlabel="Model accuracy [r]", ylabel="Change in accuracy [a.u.]")
 mean, std = acc_resampled.mean(axis=0), acc_resampled.std(axis=0)
 for i_n, n in enumerate(p["stim"]["n_bands"]):
     if i_n < 3:
-        ax[0].semilogx(p["dur_segment"], mean[:, i_n], label=n)
+        ax[0].semilogx(
+            p["dur_segment"], mean[:, i_n], label=n, linewidth=p_plt["linewidth"]
+        )
         ax[0].fill_between(
             p["dur_segment"],
             mean[:, i_n] + std[:, i_n],
@@ -77,7 +90,9 @@ for i_n, n in enumerate(p["stim"]["n_bands"]):
 mean, std = reg_resampled.mean(axis=0), reg_resampled.std(axis=0)
 for i_n, n in enumerate(p["stim"]["n_bands"]):
     if i_n < 3:
-        ax[1].semilogx(p["dur_segment"], mean[:, i_n], label=n)
+        ax[1].semilogx(
+            p["dur_segment"], mean[:, i_n], label=n, linewidth=p_plt["linewidth"]
+        )
         ax[1].fill_between(
             p["dur_segment"],
             mean[:, i_n] + std[:, i_n],
