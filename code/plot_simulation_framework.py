@@ -8,7 +8,19 @@ from mtrf.stats import neg_mse
 from generators import wavelet, random_pulses, scale_noise
 
 root = Path(__file__).parent.parent.absolute()
+
+# configure pyplot
 plt.style.use("science")
+colors = plt.rcParams["axes.prop_cycle"].by_key()["color"]
+p_plt = json.load(open(root / "code" / "plotting_parameters.json"))
+plt.rc("font", size=p_plt["font"]["small"])  # controls default text sizes
+plt.rc("axes", titlesize=p_plt["font"]["small"])  # fontsize of the axes title
+plt.rc("axes", labelsize=p_plt["font"]["medium"])  # fontsize of the x and y labels
+plt.rc("xtick", labelsize=p_plt["font"]["small"])  # fontsize of the tick labels
+plt.rc("ytick", labelsize=p_plt["font"]["small"])  # fontsize of the tick labels
+plt.rc("legend", fontsize=p_plt["font"]["small"])  # legend fontsize
+plt.rc("figure", titlesize=p_plt["font"]["bigger"])
+
 p = json.load(open(root / "code" / "parameters.json"))
 np.random.seed(p["seed"])
 
@@ -38,17 +50,23 @@ r = trf.train(
 pred = trf.predict(stim)[0].flatten()
 
 fig, ax = plt.subplots(2, 2, figsize=(8, 6))
-ax[0, 0].plot(tf_times, tf / tf.max(), label="original")
+ax[0, 0].plot(tf_times, tf / tf.max(), label="original", linewidth=p_plt["linewidth"])
 ax[0, 0].plot(
     trf.times,
     trf.weights.flatten() / trf.weights.flatten().max(),
     label="reconstruction",
+    linewidth=p_plt["linewidth"],
 )
-ax[0, 1].plot(stim_times, stim, label="stimulus")
-ax[0, 1].plot(stim_times, (resp / resp.max()) * stim.max(), label="response")
+ax[0, 1].plot(stim_times, stim, label="stimulus", linewidth=p_plt["linewidth"])
+ax[0, 1].plot(
+    stim_times,
+    (resp / resp.max()) * stim.max(),
+    label="response",
+    linewidth=p_plt["linewidth"],
+)
 ax[1, 0].plot(stim_times, resp + noise)
-ax[1, 1].plot(stim_times, resp, label="response")
-ax[1, 1].plot(stim_times, pred, label="prediction")
+ax[1, 1].plot(stim_times, resp, label="response", linewidth=p_plt["linewidth"])
+ax[1, 1].plot(stim_times, pred, label="prediction", linewidth=p_plt["linewidth"])
 ax[0, 0].set(yticks=[])
 ax[0, 1].set(xlim=(0, 5), yticks=[])
 ax[1, 0].set(xlim=(0, 5), yticks=[])
