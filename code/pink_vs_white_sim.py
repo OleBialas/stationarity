@@ -40,10 +40,14 @@ for i_r in range(p["n_reps"]):
             noise_scaled = np.expand_dims(noise_scaled, axis=1)
             for i_d, dur in enumerate(p["dur_segment"]):
                 stim_train_segments, resp_train_segments = segment_data(
-                    [stim_train], [resp_train + noise_scaled], dur, normalize=True
+                    [stim_train],
+                    [resp_train + noise_scaled],
+                    p["fs"],
+                    dur,
+                    normalize=True,
                 )
                 stim_test_segments, resp_test_segments = segment_data(
-                    [stim_test], [resp_test], dur, normalize=True
+                    [stim_test], [resp_test], p["fs"], dur, normalize=True
                 )
 
                 trf = TRF()
