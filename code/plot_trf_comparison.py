@@ -18,7 +18,7 @@ plt.rc("axes", titlesize=p_plt["font"]["small"])  # fontsize of the axes title
 plt.rc("axes", labelsize=p_plt["font"]["medium"])  # fontsize of the x and y labels
 plt.rc("xtick", labelsize=p_plt["font"]["small"])  # fontsize of the tick labels
 plt.rc("ytick", labelsize=p_plt["font"]["small"])  # fontsize of the tick labels
-plt.rc("legend", p_pltsize=p_plt["font"]["small"])  # legend fontsize
+plt.rc("legend", fontsize=p_plt["font"]["small"])  # legend fontsize
 plt.rc("figure", titlesize=p_plt["font"]["bigger"])
 
 p = json.load(open(root / "code" / "effect_of_segmentation_parameters.json"))
