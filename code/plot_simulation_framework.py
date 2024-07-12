@@ -21,7 +21,7 @@ plt.rc("ytick", labelsize=p_plt["font"]["small"])  # fontsize of the tick labels
 plt.rc("legend", fontsize=p_plt["font"]["small"])  # legend fontsize
 plt.rc("figure", titlesize=p_plt["font"]["bigger"])
 
-p = json.load(open(root / "code" / "parameters.json"))
+p = json.load(open(root / "code" / "pink_vs_white_sim_parameters.json"))
 np.random.seed(p["seed"])
 
 fs = 250
