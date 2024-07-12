@@ -6,7 +6,19 @@ from matplotlib import pyplot as plt
 import scienceplots
 
 root = Path(__file__).parent.parent.absolute()
+
+# configure pyplot
 plt.style.use("science")
+colors = plt.rcParams["axes.prop_cycle"].by_key()["color"]
+p_plt = json.load(open(root / "code" / "plotting_parameters.json"))
+plt.rc("font", size=p_plt["font"]["small"])  # controls default text sizes
+plt.rc("axes", titlesize=p_plt["font"]["small"])  # fontsize of the axes title
+plt.rc("axes", labelsize=p_plt["font"]["medium"])  # fontsize of the x and y labels
+plt.rc("xtick", labelsize=p_plt["font"]["small"])  # fontsize of the tick labels
+plt.rc("ytick", labelsize=p_plt["font"]["small"])  # fontsize of the tick labels
+plt.rc("legend", fontsize=p_plt["font"]["small"])  # legend fontsize
+plt.rc("figure", titlesize=p_plt["font"]["bigger"])
+
 p = json.load(open(root / "code" / "pink_vs_white_sim_parameters.json"))
 np.random.seed(p["seed"])
 
@@ -29,7 +41,10 @@ for i_a, alpha in enumerate(p["alpha"]):
             reg_resampled[i_r, :] = reg[idx, i_a, i_s, :].mean(axis=0)
         acc_resampled /= acc_resampled.max()
         ax[1, i_a].semilogx(
-            p["dur_segment"], acc_resampled.mean(axis=0), label=f"{snr} dB"
+            p["dur_segment"],
+            acc_resampled.mean(axis=0),
+            label=f"{snr} dB",
+            linewidth=p_plt["linewidth"],
         )
         ax[1, i_a].fill_between(
             p["dur_segment"],
