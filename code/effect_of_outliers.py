@@ -16,6 +16,16 @@ for sub in (root / "data").glob("sub-*"):
         sub, p["dur_train"], p["fs"], p["eeg_low_cutoff"], p["eeg_high_cutoff"]
     )
 
-    stimulus_segments, response_segments = segment_data(
-        stimulus, response, p["fs"], p["dur_train"], normalize=False
-    )
+    for dur in [p["dur_short"], p["dur_long"]]:
+        stimulus_segments, response_segments = segment_data(
+            stimulus, response, p["fs"], dur, normalize=False
+        )
+
+        trf.train(
+            stimulus_segments,
+            response_segments,
+            p["fs"],
+            p["tmin"],
+            p["tmax"],
+            reg[sub_id, idx, band_idx],
+        )

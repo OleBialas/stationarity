@@ -4,6 +4,7 @@
     "dur_long": 120,
     "cv_folds": 5,
     "fs": 128,
+    "corr_thresh": 0.015,
     "eeg_low_cutoff": 0.1,
     "eeg_high_cutoff": 15,
     "stim": {"low_cutoff": 20, "high_cutoff": 9000, "env_cutoff": 15, "n_bands": 1},

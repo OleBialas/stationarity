@@ -1,7 +1,7 @@
 #!/bin/bash
 # Submit the job array with one job per subject and number of bands
 #SBATCH --output=/scratch/obialas/logs/seg_%A_%a.log
-#SBATCH --array=1-20
+#SBATCH --array=1-19
 #SBATCH -t 0-48:00:00
 #SBATCH -c 4 --mem-per-cpu=6G
 #SBATCH --partition=standard
@@ -18,7 +18,7 @@ sub_list=$(/software/jq/1.6/jq -r '.subjects | @csv' "$json_file")
 # Convert the CSV string to an array
 IFS=',' read -ra sub_array <<< "$sub_list"
 
-sub=${sub_array[$SLURM_ARRAY_TASK_ID]}
+sub=${sub_array[$SLURM_ARRAY_TASK_ID-1]}
 sub=$(echo "$sub" | sed 's/^"\(.*\)"$/\1/') # remove quotation marks
 echo "running $sub"
 
@@ -30,7 +30,7 @@ mkdir -p results/fit
 git-annex dead here # dont use git annex in the clone
 git checkout -b "job-$SLURM_ARRAY_TASK_ID" # new unique branch
 
-datalad run --input "data/$sub" --input "results/spectrogram" --output "results/fit/*" "python code/effect_of_segmentation.py $sub"
+datalad run --input "data/$sub" --input "results/spectrogram" --output "results/fit/${sub}_accuracy.npy" --output "results/fit/${sub}_lambda.npy" "python code/effect_of_segmentation.py $sub"
 datalad push --to origin
 
 
